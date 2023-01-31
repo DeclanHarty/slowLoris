@@ -17,11 +17,13 @@ def main():
     
 
     address = 'declanharty.github.io'
+    port = 80
     num_of_sockets = 3
 
-    sockets = init_sockets(address, num_of_sockets)
+    sockets = init_sockets(address, port, num_of_sockets)
 
-    close_sockets(sockets)
+    if sockets:
+        close_sockets(sockets)
 
 
 
@@ -38,9 +40,9 @@ def main():
     # socket1.close()
     # print("Socket has been closed...")
 
-def init_sockets(address, num_of_sockets):
+def init_sockets(address, port, num_of_sockets):
     content = 3
-    target = (address, 80)
+    target = (address, port)
     sockets = [None] * num_of_sockets
     for num in range(num_of_sockets):
         sockets[num] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,8 +50,12 @@ def init_sockets(address, num_of_sockets):
             sockets[num].connect(target)
             sockets[num].send(content.to_bytes(8, 'big'))
             print("Socket Connected...")
+        except socket.timeout:
+            print("Socket Timeout Error...")
+            return False
         except:
-            print("Socket Connection Failed...")
+            print("Other Error")
+            return False
 
     return sockets
 
